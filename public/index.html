@@ -1,0 +1,171 @@
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+}
+html,body {
+    overflow: hidden;
+}
+.holder {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;  /* Changed from row to column for better layout */
+}
+.holder > div {
+    word-wrap: normal; /* Allow text to break and wrap */
+    white-space: normal; /* Ensure text wraps normally */
+}
+#message-holders {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
+    max-height: calc(100vh - 70px);
+    box-sizing: border-box;
+}
+</style>
+<div style="position:absolute; height: calc(100vh); width: 206px; border-right: 1px solid black; background-color: transparent;"></div> <!--Adds the little line between chat and username-->
+</div>
+<div class="holder">
+    <div>
+        <div style="position:static; height: 20px; width: 100%; border-bottom: 1px solid black; display: flex; flex-direction: row;">
+            <div style="width: 206px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                <p>
+                    <span style="color: gray;">#thisistheonlychannel</span>
+                </p>
+            </div>
+            <div style="flex-grow: 1; display: flex; align-items: center;">
+                <p style="padding-left: 5px;">
+                    Welcome to <span style="color: gray;">#thisistheonlychannel</span>! There are currently&nbsp;<span id="user-count" style="color: blue;">0</span>&nbsp;users connected.
+                </p>
+            </div>
+        </div>
+        <div id="message-holders" style="position: relative; padding-bottom: 5px;"></div>
+        <div style="position: fixed; bottom: 0; left: 0; width: 100vw; display: flex; flex-direction: column; z-index: 100;">
+            <div style="flex-grow: 1; height: 100%;"></div>
+            <div style="height: 50px;">
+                <div style="display: flex; height: 100%;">
+                    <input placeholder="Type a message here!" id="user_message" style="height: 100%; width: 95%; padding-left: 5px;">
+                    <button onclick="sendMessage();" style="height: 100%; width: 5%; min-width: 100px;">
+                        Send Message
+                    </button>
+                    <button onclick="changeUsername();" style="height: 100%; width: 5%; min-width: 100px;">
+                        Change Username
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const users = document.getElementById('users');
+const timestamps = document.getElementById('timestamps');
+const messages = document.getElementById('messages');
+
+function createMessage(timestamp,username,message,color){
+    const messageContainer = document.createElement('div');
+    messageContainer.style = 'position: relative; width: 100vw; display: flex; padding:1.5px;';
+
+    const leftContainer = document.createElement('div');
+    leftContainer.style = 'width: 206px; display: flex;';
+
+    const timestampDiv = document.createElement('div');
+    timestampDiv.style = 'flex-grow:1; text-align: left; color: gray;';
+    timestampDiv.textContent = timestamp;
+
+    const usernameDiv = document.createElement('div');
+    usernameDiv.style = 'flex-grow:1; text-align: right; font-weight: bold;';
+    usernameDiv.textContent = username;
+
+    const spaceDiv = document.createElement('div');
+    spaceDiv.style = 'width: 5px;';
+
+    leftContainer.appendChild(timestampDiv);
+    leftContainer.appendChild(usernameDiv);
+    leftContainer.appendChild(spaceDiv);
+
+    const rightContainer = document.createElement('div');
+    rightContainer.style = 'flex-grow: 1; display: flex; flex-direction: row;';
+
+    const leftPaddingDiv = document.createElement('div');
+    leftPaddingDiv.style = 'height: 100%; width: 3px; min-width: 3px;';
+
+    const messageDiv = document.createElement('div');
+    messageDiv.style = `flex-grow: 1; color: ${color}`;
+    messageDiv.textContent = message;
+
+    const rightPaddingDiv = document.createElement('div');
+    rightPaddingDiv.style = 'height: 100%; width: 3px; min-width: 3px;';
+
+    rightContainer.appendChild(leftPaddingDiv);
+    rightContainer.appendChild(messageDiv);
+    rightContainer.appendChild(rightPaddingDiv);
+
+    messageContainer.appendChild(leftContainer);
+    messageContainer.appendChild(rightContainer);
+
+    document.getElementById('message-holders').appendChild(messageContainer);
+    scrollIntoView(messageContainer)
+}
+
+function scrollIntoView(elem){
+    elem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+//Everything involving socket goes in here.
+
+var socket = io();
+
+function sendMessage(){
+    if (!(String(document.getElementById('user_message').value).trim == "")){
+        socket.emit('message-send', { message:document.getElementById('user_message').value, username:socket.username, color:'black' });
+        document.getElementById('user_message').value = "";
+    }
+}
+
+function changeUsername(){
+    let oldusername = socket.username;
+    socket.username = window.prompt("Please send your new username, capped at 16 characters.");
+    socket.username = String(socket.username).substring(0,15)
+
+    socket.emit('set-username',{ new_username:socket.username, old_username:oldusername })
+}
+
+socket.on('user-count',(count)=>{
+    document.getElementById('user-count').textContent = count;
+})
+
+socket.on('user-name',(name)=>{
+    socket.username = name;
+})
+
+socket.on('message-send', (input) => {
+    let now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+
+    let timestamp = `[${hours}:${minutes}:${seconds}]`;
+
+    let message = input.message;
+    let username = input.username;
+    let color = input.color;
+
+    createMessage(timestamp,username,message,color);
+});
+
+</script>
