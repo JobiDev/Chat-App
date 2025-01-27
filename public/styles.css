@@ -1,0 +1,87 @@
+@font-face {
+    font-family: 'gg-sans-medium';
+    src: url("/gg-sans-medium.woff");
+}
+
+:root{
+    --bg-color: #1B1B1B;
+}
+
+*{
+    padding: 0;
+    border: 0;
+    margin: 0;
+    font-family: 'gg-sans-medium';
+    color: white;
+    font-weight: normal;
+}
+
+/*scrollbar*/
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+  
+::-webkit-scrollbar-thumb {
+    background-color: #353535;
+    border-radius: 10px;
+}
+  
+::-webkit-scrollbar-track {
+    background-color: #232323;
+}
+/*scrollbar*/
+
+input::placeholder{
+    color: #B5BAC1;
+}
+
+.content{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.message{
+    margin: 10px;
+}
+
+.message-text{
+    padding-left: 10px;
+}
+
+.message h1, h2, h3{
+    padding-bottom: 5px;
+}
+
+.message img{
+    max-width: 500px;
+    max-height: 500px;
+}
+
+.message-container{
+    flex-grow: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-bottom: 1px dashed black;
+    border-top: 1px dashed black;
+    background-color: var(--bg-color);
+}
+
+.bar{
+    width: 100%;
+    min-height: 50px;
+    max-height: 50px;
+    flex-shrink: 0;
+    background-color: var(--bg-color);
+}
+
+input,button{
+    background-color: #353535;
+    padding-left: 5px;
+    margin: 2px;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 10px;
+}

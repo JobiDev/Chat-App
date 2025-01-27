@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="content">
+        <div class="bar" style="display: flex; align-items: center; border-bottom: 1px solid #060606;">
+            <p style="margin: 10px;">Main chat - <span id="online-user-count">0</span> People online</p>
+        </div>
+        <div id="message-container" class="message-container"></div>
+        <div class="bar" style="display: flex; align-items: center; border-top: 1px solid #060606;">
+            <input
+            id="message-box"
+            maxlength="200"
+            style="padding: 0px; background-color: #232323; padding-left: 5px; min-height: calc(100% - 10px); flex-grow: 1; margin: 2px; border-radius: 10px; border: 1px solid black;"
+            placeholder="Type to send a message"
+            >
+            <img
+            onclick="document.getElementById('settings-window').style.transform = 'translateY(-100vh)'"
+            src="images/settings.svg"
+            style="background-color: #232323; margin: 2px; min-height: calc(100% - 20px); padding: 5px; border-radius: 10px; border: 1px solid black;"
+            >
+        </div>
+    </div>
+    <div id="settings-window" class="content" style="position: fixed; justify-content: center; align-items: center; transition: 0.3s;">
+        <div style="background-color: #2b2b2b; padding: 15px; height: 500px; width: 500px; border: 1px solid black; border-radius: 25px;">
+            <div style="position: static; width: 100%; display: flex; justify-content: right;">
+                <img onclick="document.getElementById('settings-window').style.transform = 'translateY(100vh)'" style="position: absolute;" src="images/close.svg">
+            </div>
+            <h3>Username:</h3>
+            <input id="settings-username" maxlength="16" style="padding: 10px;">
+            <button onclick="updateUsername()">Update Username</button>
+            <h3>Admin:</h3>
+            <input id="settings-admin-login" placeholder="Admin Password" style="padding: 10px;">
+            <button onclick="adminLogin()">Login</button>
+        </div>
+    </div>
+</body>
+</html>
+<script src="handler.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="socketio.js"></script>
